@@ -1,4 +1,40 @@
 0. What is pneumonoultramicroscopicsilicovolcanoconiosis?
-  - [noun] an invented long word said to mean a lung disease caused by inhaling very fine ash and sand dust.
+  - pneumonoultramicroscopicsilicovolcanoconiosis is the longest word in the dictionary.
 
 1. According to its man page, what does getrusage do?
+  - getrusage returns usage statistics for the calling process, which is the sum of resources used by all threads in the process,    
+    including both user mode and kernal mode.  The resource usages are returned in usage structure, which contains ru_utime, total amount 
+    of time spent executing in user mode, and ru_stime, total amount of time spent executing in kernel mode. Both of them are expressed in 
+    a timeval structure (seconds + microseconds).
+    
+2. Per that same man page, how many members are in a variable of type struct rusage?
+  - 16
+  
+3. Why do you think we pass before and after by reference (instead of by value) to calculate, even though we’re not changing their 
+   contents?
+  - because before and after are large structs whose values are slow to pass and return and increase the potential risk of stack overflow     whem remembered in the memory.
+  
+4. Explain as precisely as possible, in a paragraph or more, how main goes about reading words from a file. In other words, convince us   
+   that you indeed understand how that function’s for loop works.
+  - fgetc returns the unsigned char of the next character in the stream and advance the pointer in the stream until it reaches the end of     file (EOF). 
+        (1) If the returned unsigned char is (a) an alphabetic character or (b) an apostrophe following a character, append the     
+            character/apostrophe to the word and advance the index of the char array of word. 
+                (1.1) If the word becomes larger than prescribed word length, the word is not recorded and keep getting the next character 
+                      if the EOF of stream is not reached without recording the characters read.
+        (2) If the returned unsigned char is a digit, the word is not recorded and keep getting the next character if the EOF of stream is 
+            not reached without recording the characters read.
+        (3) If the returned unsigned char is not alphanumeric, the word is appended with "\0" indicating the end of a word and increase 
+            the word count by 1. The spelling of the word is then checked and the time usage of the ckecking is calculated and added to 
+            the total spelling checking time.
+                (3.1) If the word is confirmed misspelled, then the misspelled word is printed and the count of misspelling increases by  
+                      1.
+            At the end of this process, reset the index to 0 to acquire next word.
+            
+5. Why do you think we used fgetc to read each word’s characters one at a time rather than use fscanf with a format string like "%s" to 
+   read whole words at a time? Put another way, what problems might arise by relying on fscanf alone?
+   - fgetc reads character by character which gives the programme more control over the type of word that is allowed. fscanf instead has 
+     only 7 type specifiers. All of them require further correction once retrieving the word in order to conform the word type specified 
+     in this programme.
+     
+6. Why do you think we declared the parameters for check and load as const (which means "constant")?
+  - To ensure the immutability of the parameter and improve the performance of the programme.
