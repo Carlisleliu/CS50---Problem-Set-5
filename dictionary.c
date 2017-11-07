@@ -53,7 +53,7 @@ bool check(const char *word)
         char c = tolower(word[i]);
         
         // if the character is ', then set its value to a + 26 which is 123
-        if (c == 92)
+        if (c == '\'')
         {
             c = 123;
         }
@@ -62,7 +62,7 @@ bool check(const char *word)
         trie* current = node->children[c - 97];
         
         // if it does not exist, then create one and go to that children. Otherwise, go to the children directly.
-        if (node == NULL)
+        if (current == NULL)
         {
             return false;
         }
@@ -90,29 +90,32 @@ bool load(const char *dictionary)
     }
     
     // assign malloc a chunck of memory with size equivalent to a trie
-    root = malloc(sizeof *root);
+    root = calloc(1, sizeof(*root));
     
     // declare a trie called node to duplicate root
     trie* node = root;
     
     // iterate through the character in the dictionary file
-    for (int c = fgetc(d); c != EOF; c = fgetc(d))
+    for (char c = fgetc(d); c != EOF; c = fgetc(d))
     {
         // if the end of a word is reached and the current node is not the root, then increase the count of word in the book by 1
         // and set the word to true and set the current node to root
         if (c == '\n')
         {
-            word_in_book++;
+            if (node != root)
+            {
+                word_in_book++;
                 
-            node->word = true;
+                node->word = true;
                 
-            node = root;
+                node = root;
+            }
         }
         // if the character is not the end of a word
         else
         {
             // if the character is ', then set its value to a + 26, which is 123
-            if (c == 92)
+            if (c == '\'')
             {
                 c = 123;
             }
@@ -123,13 +126,13 @@ bool load(const char *dictionary)
             // if it does not exist, then create one and go to that children. Otherwise, go to the children directly.
             if (current == NULL)
             {
-                node->children[c - 97] = malloc(sizeof *root);
+                node->children[c - 97] = calloc(1, sizeof (*root));
                 
                 node = node->children[c - 97];
             }
             else
             {
-                node = current;
+                node = node->children[c - 97];
             }
         }
         
